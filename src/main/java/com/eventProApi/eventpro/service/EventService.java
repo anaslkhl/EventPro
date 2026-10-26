@@ -11,6 +11,7 @@ import com.eventProApi.eventpro.repository.OrganizerRepository;
 import com.eventProApi.eventpro.repository.TicketCategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +20,12 @@ import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
-@Builder
+@RequiredArgsConstructor
 public class EventService {
 
     private final OrganizerRepository organizerRepository;
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
-    private final TicketCategoryRepository ticketCategoryRepository;
 
 
 
@@ -40,16 +40,11 @@ public class EventService {
                 .orElseThrow(() -> new NoSuchElementException("The organazier not found !"));
 
 
-        TicketCategory category = ticketCategoryRepository
-                .findById(eventRequest.getCategoryId())
-                .orElseThrow(() -> new NoSuchElementException("Ticket category not found!"));
-
 
         Event event = eventMapper.toEntity(eventRequest);
 
         event.setOrganizer(organizer);
 
-        event.setCategory(category);
 
         event.setPublished(true);
 

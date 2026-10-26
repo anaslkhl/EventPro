@@ -43,10 +43,11 @@ public class Promotion {
     @Column(nullable = false)
     private LocalDate dateFin;
 
-    private LocalDate limiteUtilisation;
+    @Column(nullable = false)
+    private Integer limiteUtilisation;
 
     @Column(nullable = false)
-    private Long nombreUtilisations = 0L;
+    private Integer nombreUtilisations;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizer_id", nullable = false)

@@ -24,11 +24,9 @@ public class TicketCategoryService {
     public TicketCategoryResponse create(
             CreateTicketCategoryRequest request) {
 
-        TicketCategory category =
-                ticketCategoryMapper.toEntity(request);
+        TicketCategory category = ticketCategoryMapper.toEntity(request);
 
-        TicketCategory saved =
-                ticketCategoryRepository.save(category);
+        TicketCategory saved = ticketCategoryRepository.save(category);
 
         return ticketCategoryMapper.toResponse(saved);
     }
