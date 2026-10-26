@@ -45,4 +45,7 @@ public class CreateEventRequest {
 
     @NotNull(message = "Organizer ID is required")
     private UUID organizerId;
+
+    @NotNull(message = "Ticket category ID is required")
+    private UUID categoryId;
 }

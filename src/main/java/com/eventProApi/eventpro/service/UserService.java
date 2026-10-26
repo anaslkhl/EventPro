@@ -1,17 +1,19 @@
+
 package com.eventProApi.eventpro.service;
 
 import com.eventProApi.eventpro.dto.CreateUserRequest;
 import com.eventProApi.eventpro.dto.UserResponse;
-import com.eventProApi.eventpro.entity.User;
+import com.eventProApi.eventpro.entity.*;
 import com.eventProApi.eventpro.mapper.UserMapper;
-import com.eventProApi.eventpro.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import com.eventProApi.eventpro.repository.*;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-
+import java.util.List;
+import java.util.Locale;
+import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -19,62 +21,72 @@ import java.util.*;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final OrganizerRepository organizerRepository;
+    private final ClientRepository clientRepository;
+    private final AdminRepository adminRepository;
+    private final AgentControleRepository agentControleRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
-    @Transactional
-    public UserResponse createUser(CreateUserRequest request){
+    public UserResponse createUser(CreateUserRequest request) {
 
         String email = normalizeEmail(request.getEmail());
 
-        if(userRepository.existsByEmail(email)){
-            throw new IllegalArgumentException("A user with this email already exist !");
+        if (userRepository.existsByEmail(email)) {
+            throw new IllegalArgumentException(
+                    "A user with this email already exists!"
+            );
         }
 
-        String encodePassword = passwordEncoder.encode(request.getPassword());
 
-        User user = userMapper.toEntity(request, encodePassword);
+        User savedUser = switch (request.getRole()) {
 
-        User savedUser = userRepository.save(user);
+            case USER -> userRepository.save(userMapper.toUserEntity(request));
 
+            case ORGANIZER ->organizerRepository.save(userMapper.toOrganizerEntity(request));
+
+            case CLIENT ->clientRepository.save(userMapper.toClientEntity(request));
+
+            case ADMIN -> adminRepository.save(userMapper.toAdminEntity(request));
+
+            case AGENT_CONTROLE -> agentControleRepository.save(userMapper.toAgentControleEntity(request));
+        };
 
         return userMapper.toResponse(savedUser);
-
     }
 
+    @Transactional(readOnly = true)
+    public UserResponse getUserById(UUID id) {
 
-
-    public UserResponse getUserById(UUID id){
-
-        User user = userRepository.findByIdAndActiveTrue(id)
-                .orElseThrow(() -> new NoSuchElementException("Active user not found !"));
+        User user = userRepository.findById(id)
+                .orElseThrow(() ->
+                        new IllegalArgumentException(
+                                "User not found with id: " + id
+                        )
+                );
 
         return userMapper.toResponse(user);
     }
 
+    @Transactional(readOnly = true)
+    public List<UserResponse> getAllUsers() {
 
-    public UserResponse getUserByEmail(String email){
-
-        if(email == null || email.isBlank()){
-            throw new IllegalArgumentException("Email must not be empty !");
-        }
-
-        User user = userRepository.findByEmail(normalizeEmail(email))
-                .filter(User::isActive).orElseThrow(() -> new NoSuchElementException("Active user not found !"));
-
-        return userMapper.toResponse(user);
+        return userRepository.findAll()
+                .stream()
+                .map(userMapper::toResponse)
+                .toList();
     }
-
-    public List<UserResponse> getAllUsers(){
-
-        return userRepository.findAllByActiveTrue().stream().map(userMapper::toResponse).toList();
-    }
-
-
 
     private String normalizeEmail(String email) {
         return email.trim().toLowerCase(Locale.ROOT);
     }
+
+    public UserResponse getUserByEmail(String email) {
+        User user = userRepository.findByEmail(email.trim().toLowerCase())
+                .orElseThrow(() -> new NoSuchElementException(
+                        "User not found with email: " + email
+                ));
+
+        return userMapper.toResponse(user);
+    }
+
 }
-
-

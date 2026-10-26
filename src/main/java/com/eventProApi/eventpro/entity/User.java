@@ -1,7 +1,9 @@
 package com.eventProApi.eventpro.entity;
 
+import com.eventProApi.eventpro.entity.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -33,8 +35,13 @@ public class User {
     @Column(nullable = false, length = 150)
     private String email;
 
+    @Builder.Default
     @Column(nullable = false)
     private boolean active = true;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

@@ -4,22 +4,28 @@ import com.eventProApi.eventpro.dto.CreateEventRequest;
 import com.eventProApi.eventpro.dto.EventResponse;
 import com.eventProApi.eventpro.entity.Event;
 import com.eventProApi.eventpro.entity.Organizer;
+import com.eventProApi.eventpro.entity.TicketCategory;
 import com.eventProApi.eventpro.mapper.EventMapper;
 import com.eventProApi.eventpro.repository.EventRepository;
 import com.eventProApi.eventpro.repository.OrganizerRepository;
+import com.eventProApi.eventpro.repository.TicketCategoryRepository;
 import jakarta.transaction.Transactional;
+import lombok.Builder;
 import lombok.experimental.SuperBuilder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
-@SuperBuilder
+@Service
+@Builder
 public class EventService {
 
     private final OrganizerRepository organizerRepository;
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
+    private final TicketCategoryRepository ticketCategoryRepository;
 
 
 
@@ -31,12 +37,19 @@ public class EventService {
         }
 
         Organizer organizer = organizerRepository.findById(eventRequest.getOrganizerId())
-                .orElseThrow(() ->
-                        new NoSuchElementException("The organazier not found !"));
+                .orElseThrow(() -> new NoSuchElementException("The organazier not found !"));
+
+
+        TicketCategory category = ticketCategoryRepository
+                .findById(eventRequest.getCategoryId())
+                .orElseThrow(() -> new NoSuchElementException("Ticket category not found!"));
+
 
         Event event = eventMapper.toEntity(eventRequest);
 
         event.setOrganizer(organizer);
+
+        event.setCategory(category);
 
         event.setPublished(true);
 

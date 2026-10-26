@@ -21,11 +21,11 @@ public class EventResponse {
     private String title;
     private String description;
     private String location;
+    private boolean published;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer capacity;
     private BigDecimal price;
-    private boolean status;
     private UUID organizerId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

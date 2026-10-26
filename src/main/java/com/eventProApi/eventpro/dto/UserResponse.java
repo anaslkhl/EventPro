@@ -4,12 +4,13 @@ package com.eventProApi.eventpro.dto;
 import com.eventProApi.eventpro.entity.enums.UserRole;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
-@Builder
+@SuperBuilder
 
 public class UserResponse {
 
@@ -25,6 +26,9 @@ public class UserResponse {
     private UserRole role;
 
     private boolean active;
+
+    private String organizationName;
+    private String phoneNumber;
 
     private LocalDateTime createdAt;
 

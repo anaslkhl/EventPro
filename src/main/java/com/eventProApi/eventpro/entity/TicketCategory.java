@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "ticket_categories")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class TicketCategory {
 
     @Id
@@ -32,7 +32,5 @@ public class TicketCategory {
     @Column(nullable = false)
     private BigDecimal quotaMaxParClient;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id", nullable = false)
-    private Event event;
+
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Table(name = "events")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 
 
 public class Event {
@@ -27,6 +28,9 @@ public class Event {
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
+
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @Column(nullable = false, length = 150)
     private String location;
@@ -56,6 +60,7 @@ public class Event {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private TicketCategory category;
+    
 
     @PrePersist
     protected void onCreate() {
