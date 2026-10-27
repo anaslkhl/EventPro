@@ -20,7 +20,7 @@ import java.util.UUID;
 )
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Promotion {
 
     @Id
@@ -47,7 +47,7 @@ public class Promotion {
     private Integer limiteUtilisation;
 
     @Column(nullable = false)
-    private Integer nombreUtilisations;
+    private Integer nombreUtilisations = 0;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "organizer_id", nullable = false)

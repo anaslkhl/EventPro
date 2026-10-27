@@ -21,5 +21,4 @@ public interface PromotionMapper {
     PromotionResponse toResponse(Promotion promotion);
 
     List<PromotionResponse> toResponseList(List<Promotion> promotions);
-
 }

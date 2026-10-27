@@ -34,7 +34,7 @@ public record CreatePromotionRequest(
 
         @NotNull(message = "Usage limit is required")
         @Min(value = 1, message = "Usage limit must be at least 1")
-        Integer usageLimit,
+        Integer limiteUtilisation,
 
         @NotNull(message = "Organizer ID is required")
         UUID organizerId

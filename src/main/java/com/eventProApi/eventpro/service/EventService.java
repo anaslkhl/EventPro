@@ -4,17 +4,21 @@ import com.eventProApi.eventpro.dto.CreateEventRequest;
 import com.eventProApi.eventpro.dto.EventResponse;
 import com.eventProApi.eventpro.entity.Event;
 import com.eventProApi.eventpro.entity.Organizer;
-import com.eventProApi.eventpro.entity.TicketCategory;
 import com.eventProApi.eventpro.mapper.EventMapper;
 import com.eventProApi.eventpro.repository.EventRepository;
 import com.eventProApi.eventpro.repository.OrganizerRepository;
-import com.eventProApi.eventpro.repository.TicketCategoryRepository;
+import com.eventProApi.eventpro.specification.EventSpecs;
 import jakarta.transaction.Transactional;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import lombok.experimental.SuperBuilder;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -67,11 +71,38 @@ public class EventService {
     }
 
     @Transactional
-    public List<EventResponse> getAllEvents() {
-        return eventRepository.findAll()
-                .stream()
-                .map(eventMapper::toResponse)
-                .toList();
+    public Page<EventResponse> getAllEvents(int page, int size){
+
+        Pageable pageable = PageRequest.of(page, size);
+
+        return eventRepository.findAll(pageable).map(eventMapper::toResponse);
+    }
+
+
+    @Transactional
+    public List<EventResponse> getAllEventsSorted(String sortBy, String direction){
+
+
+        Sort sort = Sort.by(Sort.Direction.fromString(direction),sortBy);
+
+        return eventRepository.findAll(sort).stream().map(eventMapper::toResponse).toList();
+    }
+
+
+    @Transactional
+    public List<EventResponse> searchByPrice(BigDecimal minPrice, BigDecimal maxPrice){
+
+
+        return eventRepository.findByPriceBetween(minPrice, maxPrice)
+                .stream().map(eventMapper::toResponse).toList();
+    }
+
+
+    @Transactional
+    public List<EventResponse> searchEvents(String title, String categoryName){
+
+        return eventRepository.findAll(EventSpecs.search(title, categoryName))
+                .stream().map(eventMapper::toResponse).toList();
     }
 
 

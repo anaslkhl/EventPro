@@ -7,10 +7,12 @@ import com.eventProApi.eventpro.service.EventService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,17 +33,51 @@ public class EventController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping
-    public ResponseEntity<List<EventResponse>> getAllEvents() {
-        return ResponseEntity.ok(eventService.getAllEvents());
-    }
-
 
     @GetMapping("/{id}")
     public ResponseEntity<EventResponse> getEventById(@PathVariable UUID id) {
 
         return ResponseEntity.ok(eventService.getEventById(id));
     }
+
+    @GetMapping
+    public ResponseEntity<Page<EventResponse>> getAllEvents(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue =   "10") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        return ResponseEntity.ok(eventService.getAllEvents(page, size));
+    }
+
+
+    @GetMapping("/sorted")
+    public ResponseEntity<List<EventResponse>> getAllEventsSorted(
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        return ResponseEntity.ok(eventService.getAllEventsSorted(sortBy, direction));
+    }
+
+
+    @GetMapping("search")
+    public ResponseEntity<List<EventResponse>> searchEvents(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String categoryName
+    ){
+
+        return ResponseEntity.ok( eventService.searchEvents(title, categoryName));
+    }
+
+
+    @GetMapping("/search/price")
+    public ResponseEntity<List<EventResponse>> searchByPrice(
+            @RequestParam BigDecimal minPrice,
+            @RequestParam BigDecimal maxPrice
+    ) {
+        return ResponseEntity.ok(eventService.searchByPrice(minPrice, maxPrice));
+    }
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEvent(@PathVariable UUID id) {
