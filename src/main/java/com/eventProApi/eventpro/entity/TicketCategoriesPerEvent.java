@@ -20,11 +20,11 @@ public class TicketCategoriesPerEvent {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id", nullable = false)
+    @JoinColumn(name = "event_id", nullable = false, unique = true)
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
+    @JoinColumn(name = "category_id", nullable = false, unique = true)
     private TicketCategory category;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -32,6 +32,12 @@ public class TicketCategoriesPerEvent {
 
     @Column(nullable = false)
     private Integer totalQuantity;
+
+    @Column(nullable = false)
+    private Integer reservedQuantity = 0;
+
+    @Column(nullable = false)
+    private Integer soldQuantity = 0;
 
     @Column(nullable = false)
     private Integer maxQuotaPerClient;

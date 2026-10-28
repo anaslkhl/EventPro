@@ -34,6 +34,6 @@ public class ReservationLine {
     private Reservation reservation;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ticket_category_id", nullable = false)
-    private TicketCategory ticketCategory;
+    @JoinColumn(name = "ticket_categories_per_event_id", nullable = false)
+    private TicketCategoriesPerEvent ticketCategoryForEvent;
 }

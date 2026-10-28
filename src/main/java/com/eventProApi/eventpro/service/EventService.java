@@ -70,6 +70,9 @@ public class EventService {
         return eventMapper.toResponse(event);
     }
 
+
+    // get events with pagination using Pageable interface
+
     @Transactional
     public Page<EventResponse> getAllEvents(int page, int size){
 
@@ -77,6 +80,9 @@ public class EventService {
 
         return eventRepository.findAll(pageable).map(eventMapper::toResponse);
     }
+
+
+    // get all events sorted
 
 
     @Transactional

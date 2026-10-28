@@ -8,16 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(
-        name = "reservations",
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_reservations_reference", columnNames = "reference")
-        }
-)
+@Table(name = "reservations")
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -31,10 +30,10 @@ public class Reservation {
     private String reference;
 
     @Column(nullable = false)
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
 
     @Column(nullable = false)
-    private LocalDate dateExpiration;
+    private LocalDateTime dateExpiration;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -46,4 +45,7 @@ public class Reservation {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
     private User client;
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReservationLine> reservationLines = new ArrayList<>();
 }

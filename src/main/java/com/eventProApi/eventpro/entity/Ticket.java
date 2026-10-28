@@ -33,8 +33,8 @@ public class Ticket {
     @Column(nullable = false, length = 20)
     private StatutBillet statut = StatutBillet.VALID;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "reservation_line_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "reservation_line_id", nullable = false)
     private ReservationLine reservationLine;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

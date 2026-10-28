@@ -2,7 +2,6 @@ package com.eventProApi.eventpro.specification;
 
 import com.eventProApi.eventpro.entity.Event;
 import com.eventProApi.eventpro.entity.TicketCategoriesPerEvent;
-import com.eventProApi.eventpro.entity.TicketCategory;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
