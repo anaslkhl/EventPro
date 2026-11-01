@@ -15,6 +15,8 @@ public interface PromotionMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "organizer", ignore = true)
     @Mapping(target = "nombreUtilisations", ignore = true)
+    @Mapping(target = "limiteUtilisation", ignore = true)
+
     Promotion toEntity(CreatePromotionRequest request);
 
     @Mapping(target = "organizerId", source = "organizer.id")

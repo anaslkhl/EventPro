@@ -9,7 +9,17 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ticket_categories_per_event")
+@Table(
+        name = "ticket_categories_per_event",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_event_category",
+                        columnNames = {"event_id", "category_id"}
+                )
+        }
+)
+
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,11 +30,11 @@ public class TicketCategoriesPerEvent {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "event_id", nullable = false, unique = true)
+    @JoinColumn(name = "event_id", nullable = false)
     private Event event;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "category_id", nullable = false, unique = true)
+    @JoinColumn(name = "category_id", nullable = false)
     private TicketCategory category;
 
     @Column(nullable = false, precision = 10, scale = 2)

@@ -1,6 +1,6 @@
 package com.eventProApi.eventpro.entity;
 
-import com.eventProApi.eventpro.entity.enums.StatutPaiement;
+import com.eventProApi.eventpro.entity.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -20,7 +21,7 @@ import java.util.UUID;
 )
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Payment {
 
     @Id
@@ -34,13 +35,15 @@ public class Payment {
     private BigDecimal montant;
 
     @Column(nullable = false)
-    private LocalDate datePaiement;
+    private LocalDateTime dateCreation;
+
+    private LocalDateTime datePaiement;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private StatutPaiement statut = StatutPaiement.PENDING;
+    private PaymentStatus statut = PaymentStatus.PENDING;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "reservation_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "reservation_id", nullable = false)
     private Reservation reservation;
 }

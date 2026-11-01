@@ -40,16 +40,17 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
+    // Get all events paginated
+
     @GetMapping
     public ResponseEntity<Page<EventResponse>> getAllEvents(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue =   "10") int size,
-            @RequestParam(defaultValue = "title") String sortBy,
-            @RequestParam(defaultValue = "asc") String direction
+            @RequestParam(defaultValue =   "10") int size
     ) {
         return ResponseEntity.ok(eventService.getAllEvents(page, size));
     }
 
+    // Get all events sorted with sort
 
     @GetMapping("/sorted")
     public ResponseEntity<List<EventResponse>> getAllEventsSorted(
@@ -59,6 +60,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.getAllEventsSorted(sortBy, direction));
     }
 
+    // Search with title or category or both of them
 
     @GetMapping("search")
     public ResponseEntity<List<EventResponse>> searchEvents(
@@ -69,6 +71,7 @@ public class EventController {
         return ResponseEntity.ok( eventService.searchEvents(title, categoryName));
     }
 
+    // Search with min price and max price
 
     @GetMapping("/search/price")
     public ResponseEntity<List<EventResponse>> searchByPrice(

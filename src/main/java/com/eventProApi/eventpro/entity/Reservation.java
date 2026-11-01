@@ -2,10 +2,7 @@ package com.eventProApi.eventpro.entity;
 
 import com.eventProApi.eventpro.entity.enums.StatutReservation;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -19,7 +16,8 @@ import java.util.UUID;
 @Table(name = "reservations")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+
+@NoArgsConstructor
 public class Reservation {
 
     @Id
@@ -44,8 +42,11 @@ public class Reservation {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "client_id", nullable = false)
-    private User client;
+    private Client client;
 
     @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ReservationLine> reservationLines = new ArrayList<>();
+
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
+    private List<Payment> payments = new ArrayList<>();
 }

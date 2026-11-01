@@ -17,6 +17,22 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Ticket {
 
+
+    public Ticket create(ReservationLine reservationLine){
+
+        Ticket ticket = new Ticket();
+
+        ticket.setCode(UUID.randomUUID().toString());
+
+        ticket.setDateEmission(LocalDate.now());
+        ticket.setStatut(StatutBillet.VALID);
+        ticket.setReservationLine(reservationLine);
+
+        ticket.setTicketCategory(reservationLine.getTicketCategoryForEvent().getCategory());
+
+        return ticket;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;

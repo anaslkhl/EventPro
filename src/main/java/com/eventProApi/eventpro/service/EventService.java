@@ -11,6 +11,7 @@ import com.eventProApi.eventpro.specification.EventSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.boot.data.autoconfigure.web.DataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +42,7 @@ public class EventService {
         }
 
         Organizer organizer = organizerRepository.findById(eventRequest.getOrganizerId())
-                .orElseThrow(() -> new NoSuchElementException("The organazier not found !"));
+                .orElseThrow(() -> new NoSuchElementException("The organizer not found !"));
 
 
 
@@ -78,31 +79,33 @@ public class EventService {
 
         Pageable pageable = PageRequest.of(page, size);
 
-        return eventRepository.findAll(pageable).map(eventMapper::toResponse);
+        return  eventRepository.findAll(pageable).map(eventMapper::toResponse);
+
     }
 
 
-    // get all events sorted
+    // get all events sorted by using Sort class and sort.by
 
 
     @Transactional
     public List<EventResponse> getAllEventsSorted(String sortBy, String direction){
 
 
-        Sort sort = Sort.by(Sort.Direction.fromString(direction),sortBy);
+        Sort sort = Sort.by(Sort.Direction.fromString(direction), sortBy);
 
-        return eventRepository.findAll(sort).stream().map(eventMapper::toResponse).toList();
+        return  eventRepository.findAll(sort).stream().map(eventMapper::toResponse).toList();
     }
 
+   // Search by price between
 
     @Transactional
     public List<EventResponse> searchByPrice(BigDecimal minPrice, BigDecimal maxPrice){
 
 
-        return eventRepository.findByPriceBetween(minPrice, maxPrice)
-                .stream().map(eventMapper::toResponse).toList();
+        return eventRepository.findByPriceBetween(minPrice, maxPrice).stream().map(eventMapper::toResponse).toList();
     }
 
+    // Search event by using specifications and JpaSpecificationExecutor to use complex methods
 
     @Transactional
     public List<EventResponse> searchEvents(String title, String categoryName){
@@ -114,10 +117,7 @@ public class EventService {
 
     @Transactional
     public void deleteEvent(UUID id) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() ->
-                        new NoSuchElementException("Event not found.")
-                );
+        Event event = eventRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Event not found."));
 
         eventRepository.delete(event);
     }

@@ -5,13 +5,13 @@ import jakarta.validation.constraints.Positive;
 
 import java.util.UUID;
 
-public record ReservationItemRequest(
+public record ReservationLineRequest(
 
         @NotNull
-        UUID ticketCategoryAssignmentId,
+        UUID ticketCategoriesPerEventId,
 
-        @NotNull
-        @Positive
+        @NotNull(message = "Quantity is required")
+        @Positive(message = "Quantity must be greater than zero")
         Integer quantity
 
 ) {}

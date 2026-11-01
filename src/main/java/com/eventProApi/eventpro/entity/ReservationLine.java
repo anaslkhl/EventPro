@@ -13,7 +13,7 @@ import java.util.UUID;
 @Table(name = "reservation_lines")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class ReservationLine {
 
     @Id

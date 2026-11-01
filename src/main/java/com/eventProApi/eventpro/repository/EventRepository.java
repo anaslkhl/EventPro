@@ -17,4 +17,6 @@ public interface EventRepository extends JpaRepository<Event, UUID>,
 
 
     List<Event> findByPriceBetween(BigDecimal minPrice, BigDecimal maxPrice);
+
+    Event findBy(UUID id);
 }

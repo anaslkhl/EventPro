@@ -12,6 +12,8 @@ public interface TicketCategoriesPerEventMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "event", ignore = true)
+    @Mapping(target = "reservedQuantity", ignore = true)
+    @Mapping(target = "soldQuantity", ignore = true)
     @Mapping(target = "category", ignore = true)
     TicketCategoriesPerEvent toEntity(
             CreateTicketCategoriesPerEventRequest request
