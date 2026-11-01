@@ -18,7 +18,7 @@ import java.util.UUID;
 public class Ticket {
 
 
-    public Ticket create(ReservationLine reservationLine){
+    public static Ticket create(ReservationLine reservationLine){
 
         Ticket ticket = new Ticket();
 

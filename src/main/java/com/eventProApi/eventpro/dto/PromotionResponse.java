@@ -14,7 +14,7 @@ public record PromotionResponse(
         BigDecimal valeurReduction,
         LocalDate dateDebut,
         LocalDate dateFin,
-        Integer usageLimit,
+        Integer limiteUtilisation,
         Long nombreUtilisations,
         UUID organizerId
 ) {}
