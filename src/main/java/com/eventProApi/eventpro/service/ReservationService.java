@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 
@@ -30,6 +31,7 @@ public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final TicketCategoriesPerEventRepository ticketCategoryRepository;
     private final ReservationMapper reservationMapper;
+    private final TicketCategoriesPerEventRepository ticketCategoriesPerEventRepository;
 
     @Transactional
     public ReservationResponse createReservation(CreateReservationRequest reservationRequest){
@@ -168,6 +170,69 @@ public class ReservationService {
         Reservation savedReservation = reservationRepository.save(reservation);
 
         return reservationMapper.toResponse(savedReservation);
+
+    }
+
+
+
+
+
+    @Transactional
+    public boolean expireReservation(UUID reservationId){
+
+
+        Reservation reservation = reservationRepository.findByIdForUpdate(reservationId)
+                .orElseThrow(()-> new ResourceNotFoundException("Reservation not found !"));
+
+        if(reservation.getStatut() != StatutReservation.PENDING){
+            return  false;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if(reservation.getDateExpiration().isAfter(now)){
+            return false;
+        }
+
+
+        Map<UUID, Integer> quantitiesByAssignment = new TreeMap<>();
+
+        for (ReservationLine line : reservation.getReservationLines()){
+
+            UUID assignmentId = line.getTicketCategoryForEvent().getId();
+
+            int quantity = Math.toIntExact(line.getQuantite());
+
+            quantitiesByAssignment.merge(
+                    assignmentId,
+                    quantity,
+                    Math::addExact
+            );
+
+        }
+
+        for(Map.Entry<UUID, Integer> entry : quantitiesByAssignment.entrySet()){
+
+            TicketCategoriesPerEvent assignment = ticketCategoriesPerEventRepository.findByIdForUpdate(entry.getKey())
+                    .orElseThrow(()-> new ResourceNotFoundException("Ticket category assignment not found !"));
+
+
+            int reservedQuantity = assignment.getReservedQuantity();
+
+            int quantityToRelease = entry.getValue();
+
+            if(reservedQuantity < quantityToRelease){
+                throw new IllegalStateException("Reserved quantity is lower than the reservation quantity !");
+            }
+
+            assignment.setReservedQuantity(reservedQuantity - quantityToRelease);
+
+        }
+
+        reservation.setStatut(StatutReservation.EXPIRED);
+
+        return true;
+
 
     }
 
