@@ -38,7 +38,7 @@ public class PaymentService {
     public PaymentResponse createPayment(CreatePaymentRequest request){
 
 
-        Reservation reservation = reservationRepository.findById(request.reservationId())
+        Reservation reservation = reservationRepository.findByIdForUpdate(request.reservationId())
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation not found !"));
 
         if(reservation.getStatut() != StatutReservation.PENDING){
