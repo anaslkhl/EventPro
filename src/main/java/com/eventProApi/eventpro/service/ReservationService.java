@@ -4,6 +4,7 @@ import com.eventProApi.eventpro.dto.CreateReservationRequest;
 import com.eventProApi.eventpro.dto.ReservationLineRequest;
 import com.eventProApi.eventpro.dto.ReservationResponse;
 import com.eventProApi.eventpro.entity.*;
+import com.eventProApi.eventpro.entity.enums.EventStatus;
 import com.eventProApi.eventpro.entity.enums.StatutReservation;
 import com.eventProApi.eventpro.exception.BusinessException;
 import com.eventProApi.eventpro.exception.ResourceNotFoundException;
@@ -64,7 +65,7 @@ public class ReservationService {
 
 
 
-        if(!event.isPublished()){
+        if(event.getStatus() != EventStatus.PUBLISHED){
             throw new BusinessException("This event is not available for reservations");
         }
 
@@ -234,6 +235,85 @@ public class ReservationService {
         return true;
 
 
+    }
+
+
+
+    @Transactional
+    public ReservationResponse cancelReservation(UUID reservationId) {
+
+        Reservation reservation = reservationRepository.findByIdForUpdate(reservationId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Reservation not found: " + reservationId)
+                );
+
+        if (reservation.getStatut() != StatutReservation.PENDING) {
+            throw new BusinessException(
+                    "Only pending reservations can be cancelled"
+            );
+        }
+
+        if (!LocalDateTime.now().isBefore(reservation.getDateExpiration())) {
+            throw new BusinessException(
+                    "This reservation has expired and cannot be cancelled"
+            );
+        }
+
+        Map<UUID, Integer> quantitiesByAssignment = new TreeMap<>();
+
+        for (ReservationLine line : reservation.getReservationLines()) {
+
+            UUID assignmentId = line.getTicketCategoryForEvent().getId();
+
+            int quantity = Math.toIntExact(line.getQuantite());
+
+            quantitiesByAssignment.merge(
+                    assignmentId,
+                    quantity,
+                    Math::addExact
+            );
+        }
+
+        for (Map.Entry<UUID, Integer> entry : quantitiesByAssignment.entrySet()) {
+
+            TicketCategoriesPerEvent assignment =
+                    ticketCategoriesPerEventRepository.findByIdForUpdate(entry.getKey())
+                            .orElseThrow(() ->
+                                    new ResourceNotFoundException(
+                                            "Ticket category assignment not found"
+                                    )
+                            );
+
+            int reservedQuantity = assignment.getReservedQuantity();
+            int quantityToRelease = entry.getValue();
+
+            if (reservedQuantity < quantityToRelease) {
+                throw new IllegalStateException(
+                        "Reserved quantity is lower than the reservation quantity"
+                );
+            }
+
+            assignment.setReservedQuantity(
+                    reservedQuantity - quantityToRelease
+            );
+        }
+
+        reservation.setStatut(StatutReservation.CANCELLED);
+
+        return reservationMapper.toResponse(reservation);
+    }
+
+
+
+    @Transactional(readOnly = true)
+    public ReservationResponse getReservationById(UUID reservationId) {
+
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Reservation not found: " + reservationId)
+                );
+
+        return reservationMapper.toResponse(reservation);
     }
 
 }

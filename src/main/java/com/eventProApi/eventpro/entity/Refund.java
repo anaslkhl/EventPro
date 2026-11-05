@@ -15,7 +15,7 @@ import java.util.UUID;
 @Table(name = "refunds")
 @Getter
 @Setter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Refund {
 
     @Id

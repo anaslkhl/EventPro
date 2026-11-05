@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/reservations")
 @RequiredArgsConstructor
@@ -28,4 +30,24 @@ public class ReservationController {
                 .status(HttpStatus.CREATED)
                 .body(response);
     }
+
+    @GetMapping("/{reservationId}")
+    public ResponseEntity<ReservationResponse> getReservationById(
+            @PathVariable UUID reservationId) {
+
+        return ResponseEntity.ok(
+                reservationService.getReservationById(reservationId)
+        );
+    }
+
+
+    @PatchMapping("/{reservationId}/cancel")
+    public ResponseEntity<ReservationResponse> cancelReservation(
+            @PathVariable UUID reservationId) {
+
+        return ResponseEntity.ok(
+                reservationService.cancelReservation(reservationId)
+        );
+    }
+
 }

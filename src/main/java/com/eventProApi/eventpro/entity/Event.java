@@ -1,5 +1,6 @@
 package com.eventProApi.eventpro.entity;
 
+import com.eventProApi.eventpro.entity.enums.EventStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -46,8 +47,9 @@ public class Event {
     @Column(nullable = false)
     private Integer capacity;
 
-    @Column(nullable = false)
-    private boolean published = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private EventStatus status = EventStatus.DRAFT;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

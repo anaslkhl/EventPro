@@ -40,6 +40,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEventById(id));
     }
 
+
     // Get all events paginated
 
     @GetMapping

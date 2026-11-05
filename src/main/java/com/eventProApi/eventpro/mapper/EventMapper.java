@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface EventMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "published", ignore = true)
+    @Mapping(target = "status", ignore = true)
     @Mapping(target = "organizer", ignore = true)
     @Mapping(target = "categories", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

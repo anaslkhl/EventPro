@@ -1,5 +1,6 @@
 package com.eventProApi.eventpro.dto;
 
+import com.eventProApi.eventpro.entity.enums.EventStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,7 +22,7 @@ public class EventResponse {
     private String title;
     private String description;
     private String location;
-    private boolean published;
+    private EventStatus status;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Integer capacity;

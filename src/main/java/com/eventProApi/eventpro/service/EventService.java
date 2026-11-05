@@ -4,6 +4,7 @@ import com.eventProApi.eventpro.dto.CreateEventRequest;
 import com.eventProApi.eventpro.dto.EventResponse;
 import com.eventProApi.eventpro.entity.Event;
 import com.eventProApi.eventpro.entity.Organizer;
+import com.eventProApi.eventpro.entity.enums.EventStatus;
 import com.eventProApi.eventpro.mapper.EventMapper;
 import com.eventProApi.eventpro.repository.EventRepository;
 import com.eventProApi.eventpro.repository.OrganizerRepository;
@@ -51,7 +52,7 @@ public class EventService {
         event.setOrganizer(organizer);
 
 
-        event.setPublished(true);
+        event.setStatus(EventStatus.DRAFT);
 
         Event savedEvent = eventRepository.save(event);
 
