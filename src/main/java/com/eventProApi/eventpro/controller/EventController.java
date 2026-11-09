@@ -90,4 +90,11 @@ public class EventController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}/publish")
+    public ResponseEntity<EventResponse> publishEvent(
+            @PathVariable UUID id
+    ) {
+        return ResponseEntity.ok(eventService.publishEvent(id));
+    }
 }

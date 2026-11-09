@@ -93,7 +93,7 @@ public class ReservationService {
         for (Map.Entry<UUID, Integer> entry : quantitiesByAssignment.entrySet()) {
 
             TicketCategoriesPerEvent assignment =
-                    ticketCategoryRepository.findByIdForUpdate(entry.getKey())
+                    ticketCategoriesPerEventRepository.findByIdForUpdate(entry.getKey())
                             .orElseThrow(() ->
                                     new ResourceNotFoundException(
                                             "Ticket category assignment not found"

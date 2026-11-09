@@ -4,15 +4,17 @@ import com.eventProApi.eventpro.dto.CreateEventRequest;
 import com.eventProApi.eventpro.dto.EventResponse;
 import com.eventProApi.eventpro.entity.Event;
 import com.eventProApi.eventpro.entity.Organizer;
+import com.eventProApi.eventpro.entity.TicketCategoriesPerEvent;
 import com.eventProApi.eventpro.entity.enums.EventStatus;
+import com.eventProApi.eventpro.exception.BusinessException;
+import com.eventProApi.eventpro.exception.ResourceNotFoundException;
 import com.eventProApi.eventpro.mapper.EventMapper;
 import com.eventProApi.eventpro.repository.EventRepository;
 import com.eventProApi.eventpro.repository.OrganizerRepository;
+import com.eventProApi.eventpro.repository.TicketCategoriesPerEventRepository;
 import com.eventProApi.eventpro.specification.EventSpecs;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.boot.data.autoconfigure.web.DataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
@@ -32,6 +35,7 @@ public class EventService {
     private final OrganizerRepository organizerRepository;
     private final EventMapper eventMapper;
     private final EventRepository eventRepository;
+    private final TicketCategoriesPerEventRepository ticketCategoriesPerEventRepository;
 
 
 
@@ -121,5 +125,60 @@ public class EventService {
         Event event = eventRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Event not found."));
 
         eventRepository.delete(event);
+    }
+
+
+    @Transactional
+    public EventResponse publishEvent(UUID eventId) {
+
+        Event event = eventRepository.findByIdForUpdate(eventId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Event not found: " + eventId)
+                );
+
+        if (event.getStatus() != EventStatus.DRAFT) {
+            throw new BusinessException(
+                    "Only draft events can be published"
+            );
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+
+        if (!event.getStartDate().isAfter(now)) {
+            throw new BusinessException(
+                    "An event cannot be published after its start date"
+            );
+        }
+
+        if (!event.getEndDate().isAfter(event.getStartDate())) {
+            throw new BusinessException(
+                    "Event end date must be after start date"
+            );
+        }
+
+        List<TicketCategoriesPerEvent> categories =
+                ticketCategoriesPerEventRepository.findByEventId(eventId);
+
+        if (categories.isEmpty()) {
+            throw new BusinessException(
+                    "An event must have at least one ticket category before publishing"
+            );
+        }
+
+        long totalTicketQuantity = categories.stream()
+                .mapToLong(TicketCategoriesPerEvent::getTotalQuantity)
+                .sum();
+
+        if (totalTicketQuantity > event.getCapacity()) {
+            throw new BusinessException(
+                    "Total ticket quantity exceeds event capacity"
+            );
+        }
+
+        event.setStatus(EventStatus.PUBLISHED);
+
+        Event savedEvent = eventRepository.save(event);
+
+        return eventMapper.toResponse(savedEvent);
     }
 }
